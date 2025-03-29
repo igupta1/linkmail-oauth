@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LinkMail OAuth Redirect</title>
+  <script>
+    window.onload = function() {
+      // Get the authorization code from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+      
+      // Show debug info
+      document.getElementById('debug').innerHTML = 
+        `URL Parameters:<br>
+         code: ${code || 'Not found'}<br>
+         state: ${state || 'Not found'}<br>
+         Full URL: ${window.location.href}`;
+      
+      // Attempt to send to extension
+      if (code) {
+        // This will trigger the extension if installed
+        // Replace YOUR_EXTENSION_ID with your actual extension ID
+        const extensionUrl = `chrome-extension://YOUR_EXTENSION_ID/oauth-redirect.html?code=${code}&state=${state}`;
+        
+        document.getElementById('message').innerHTML = 
+          `Authorization successful! Redirecting to extension...<br>
+           <a href="${extensionUrl}" id="extensionLink">Click here if not redirected automatically</a>`;
+        
+        // Try to redirect automatically
+        setTimeout(function() {
+          window.location.href = extensionUrl;
+          // Also try to click the link programmatically as a backup
+          document.getElementById('extensionLink').click();
+        }, 1000);
+      } else {
+        document.getElementById('message').innerHTML = 
+          'Error: No authorization code received. This page should only be accessed as part of the OAuth flow.';
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .container {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    h1 {
+      color: #0077b5;
+    }
+    #debug {
+      font-family: monospace;
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h1>LinkMail OAuth Redirect</h1>
+  <div id="message">Processing authentication...</div>
+  
+  <div class="container">
+    <h3>Debug Information</h3>
+    <div id="debug">Loading...</div>
+  </div>
+</body>
+</html>
